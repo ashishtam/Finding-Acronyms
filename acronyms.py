@@ -2,8 +2,10 @@
 # @Date 2016-02-08
 # Program to find the definition of acronyms from the text.
 # Python v2.7.10
+
 import numpy as np
 import sys
+import re
 def buildLCSmatrix(X, Y):
     """
     Returns the matrix with c and back pointer b obtained from dynamic programming of Longest Common Sequence (LCS)
@@ -108,34 +110,21 @@ def compareVectors(A, B, types):
     elif (resultA['size'] < resultB['size']):
         return A
 
-import re
-
-def main():
-    # Reading the text file in python
-    file = open('text.txt', 'r')
-    text = file.read()
-    print text
-
-    #split the words from the text.
-    words = text.split()
-
-    # Reading stop words from the file
-    fileStopwords = open('stopwords.txt', 'r')
-    stopwordsList = fileStopwords.read()
-    stopwords = stopwordsList.split()
-
-    # input the acronym to be search from the user
-    print "Enter acronym to be searched: "
-    acronym = raw_input().upper()
-
+def findAcronym(words, acronym, stopwords):
+    """
+    Finding the acronym definition using the list of paragraph words and stopwords for the given acronyms
+    :param words:
+    :param acronym:
+    :param stopwords:
+    :return:
+    """
     # Finding the position of the word in the list.
     index = [i for i,s in enumerate(words) if acronym in s]
 
     if (index):
         indexAcronym = index[0]
     else:
-        print "Acronym not found in the text."
-        sys.exit(1)
+        return "(Acronym not found in the text.)"
 
     # Find the pre-window
     preWindowFirstIndex = indexAcronym - 2 * len(acronym)
@@ -185,8 +174,7 @@ def main():
     Vectors = parseLCSmatrix(b, 0, 0, m, n, c[m][n], [], [])
 
     if (not Vectors):
-        print "Acronym definition not found in the text."
-        sys.exit(1)
+        return  "(Acronym definition not found in the text.)"
 
     # Choosing of vectors from the multiple vectors based on number of misses, stopcount, distance and size
     choiceVector = Vectors[0]
@@ -216,8 +204,28 @@ def main():
                 textJoin = preWindowS[i]
             finalList.append(textJoin)
 
+    return ' '.join(finalList)
 
-    print acronym, ":", ' '.join(finalList)
+def main():
+    # Reading the text file in python
+    file = open('text3.txt', 'r')
+    text = file.read()
+    print text
 
+    #split the words from the text.
+    words = text.split()
+
+    # Reading stop words from the file
+    fileStopwords = open('stopwords.txt', 'r')
+    stopwordsList = fileStopwords.read()
+    stopwords = stopwordsList.split()
+
+    #acronymLis
+    acronymList = [x for x in words if x.isupper() and len(x) > 1]
+    acronymLists= re.findall(r'\w+', ' '.join(acronymList))
+
+    print "Acronyms and its defintions"
+    for acronym in acronymLists:
+        print acronym, ":", findAcronym(words, acronym, stopwords)
 
 main()
