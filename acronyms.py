@@ -74,12 +74,11 @@ fileStopwords = open('stopwords.txt', 'r')
 stopwordsList = fileStopwords.read()
 stopwords = stopwordsList.split()
 
-
 print words
 
 # input the acronym to be search from the user
 print "Enter acronym to be searched: "
-acronym = raw_input()
+acronym = raw_input().upper()
 # acronym = "DOE"
 print acronym
 
@@ -91,7 +90,6 @@ print index
 
 if (index):
     indexAcronym = index[0]
-
 
 # Find the pre-window
 preWindowFirstIndex = indexAcronym - 2 * len(acronym)
