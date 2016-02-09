@@ -1,0 +1,1 @@
+Threat scores produced by NMC’s operational regional model (the Limited area Fine-mesh-Model, or LFM) for 0.25 mm of precipitation in the 12-24h forecast period are considerably higher (averaging  ~0.40) and have shown a slight increase since 1976 (Fig. 4).

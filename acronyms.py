@@ -1,3 +1,7 @@
+# @author Ashish Tamrakar
+# @Date 2016-02-08
+# Program to find the definition of acronyms from the text.
+# Python v2.7.10
 import numpy as np
 import sys
 def buildLCSmatrix(X, Y):
@@ -110,10 +114,10 @@ def main():
     # Reading the text file in python
     file = open('text.txt', 'r')
     text = file.read()
+    print text
 
     #split the words from the text.
     words = text.split()
-    print words
 
     # Reading stop words from the file
     fileStopwords = open('stopwords.txt', 'r')
@@ -143,18 +147,31 @@ def main():
 
     #Separate hyphenated words in the list
     preWindowJoin = ' '.join(preWindow)
-    preWindow = re.findall(r'\w+', preWindowJoin)
+    preWindowS = re.findall(r'\w+', preWindowJoin)
+    hyphenatedWords = re.findall(r'\w+-\w+[-\w+]*',preWindowJoin)
 
     # Find the leaders of the pre window
-    leaders = [x[0].lower() for x in preWindow]
+    leaders = [x[0].lower() for x in preWindowS]
 
     types = []
-    for x in preWindow:
+    for x in preWindowS:
         flagStop = x.lower() in stopwords
         if (flagStop):
             types.append('s')
         else:
-            types.append('w')
+            flagHyphen = 0
+            for word in hyphenatedWords:
+                listHyphen = ''.join(word).split('-')
+                indexHyphen = None
+                if (x in listHyphen):
+                    flagHyphen = 1
+                    indexHyphen = listHyphen.index(x)
+                    if (indexHyphen == 0):
+                        types.append('H')
+                    else:
+                        types.append('h')
+            if (not flagHyphen):
+                types.append('w')
 
     #X and Y
     X = acronym.lower()
@@ -178,9 +195,29 @@ def main():
 
     finalList = []
     firstIndex, lastIndex = getFirstAndLastIndex(choiceVector)
+
+    countHyphen = 0
+    textHyphen = ""
     for i,x in enumerate(choiceVector):
         if (i>=firstIndex and i<=lastIndex):
-            finalList.append(preWindow[i])
-    print acronym, ' '.join(finalList)
+            if (types[i] == 'H' or types[i] == 'h'):
+                textHyphen += preWindowS[i]
+                if (i+1 < len(types) and types[i+1] == 'h'):
+                    countHyphen += 1
+                    textHyphen += '-'
+                    continue
+
+            #Reset the hyphen parameters
+            if (countHyphen != 0):
+                textJoin = textHyphen
+                textHyphen = ""
+                countHyphen = 0
+            else:
+                textJoin = preWindowS[i]
+            finalList.append(textJoin)
+
+
+    print acronym, ":", ' '.join(finalList)
+
 
 main()
